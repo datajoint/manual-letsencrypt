@@ -1,7 +1,8 @@
 # create a Route53 record point fakeservices.datajoint.io to this instance
 # to run: docker-compose up -d --build
 # generated keys in ./letsencrypt-keys/archive/fakeservices.datajoint.io/
-# to archive cert: tar -zcvf fakeservices.tar.gz letsencrypt-keys
+# update fullchain and prikey in repo: datajoint/nginx-docker
+# Optional: to archive cert: tar -zcvf fakeservices.tar.gz letsencrypt-keys
 # remove the Route53 record
 version: '2.4'
 services:     
