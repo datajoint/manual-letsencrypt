@@ -7,6 +7,14 @@ variable "instance_subnet_id" {
   type = string
 }
 
+variable "cert_contact_email" {
+  type = string
+}
+
+variable "cert_staging" {
+  type = string
+}
+
 variable "route53_zone_id" {
   type = string
 }

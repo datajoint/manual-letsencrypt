@@ -52,7 +52,15 @@ write_files:
 
     echo "INFO :: Generate SSL certs"
     cd manual-letsencrypt
+
+    cat > .env <<EOF
+    EMAIL=$${CERT_CONTACT_EMAIL}
+    URL=$${ROUTE53_ZONE_NAME}
+    SUBDOMAINS=$${ROUTE53_RECORD_NAME}
+    STAGING=$${CERT_STAGING}
+    EOF
     docker compose up -d
+    
     time=0
     while [ ! -d "./letsencrypt-key/archive/${ROUTE53_RECORD_NAME}.${ROUTE53_ZONE_NAME}" ]
     do

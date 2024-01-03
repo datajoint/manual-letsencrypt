@@ -24,6 +24,8 @@ module "auto-letsencrypt-instance" {
 
   user_data = templatefile("./userdata.yaml",
     merge({
+      CERT_CONTACT_EMAIL      = var.cert_contact_email,
+      CERT_STAGING            = var.cert_staging,
       ROUTE53_ZONE_NAME       = var.route53_zone_name,
       ROUTE53_RECORD_NAME     = var.route53_record_name,
       MANUAL_LETSENCRYPT_REPO = var.manual_letsencrypt_repo
