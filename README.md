@@ -12,6 +12,10 @@ terraform init
 terraform plan # double check
 terraform apply -var-file="input.tfvars" 
 ```
+- to get certs
+```
+scp -i <key> -r ubuntu@<ip>:/manual-letsencrypt/letsencrypt-key/live/<domain> .
+```
 - to tear down
 ```
 terraform destroy
