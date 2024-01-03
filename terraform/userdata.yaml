@@ -54,20 +54,20 @@ write_files:
     cd manual-letsencrypt
 
     cat > .env <<EOF
-    EMAIL=$${CERT_CONTACT_EMAIL}
-    URL=$${ROUTE53_ZONE_NAME}
-    SUBDOMAINS=$${ROUTE53_RECORD_NAME}
-    STAGING=$${CERT_STAGING}
+    EMAIL=${CERT_CONTACT_EMAIL}
+    URL=${ROUTE53_ZONE_NAME}
+    SUBDOMAINS=${ROUTE53_RECORD_NAME}
+    STAGING=${CERT_STAGING}
     EOF
     docker compose up -d
-    
+
     time=0
     while [ ! -d "./letsencrypt-key/archive/${ROUTE53_RECORD_NAME}.${ROUTE53_ZONE_NAME}" ]
     do
       sleep 10
-      time=$$((time+10))
+      time=$((time+10))
       echo "INFO :: Waiting for SSL certs to be generated. Time elapsed: $${time} seconds"
-      if [ $$time -gt 300 ]; then
+      if [ $${time} -gt 300 ]; then
         echo "ERROR :: Timeout waiting for SSL certs to be generated"
         exit 1
       fi
