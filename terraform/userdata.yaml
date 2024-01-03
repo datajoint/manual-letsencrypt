@@ -51,7 +51,7 @@ write_files:
     git clone ${MANUAL_LETSENCRYPT_REPO} -b ${MANUAL_LETSENCRYPT_BRANCH}
 
     echo "INFO :: Generate SSL certs"
-    cd manual-letsencrypt
+    cd manual-letsencrypt/letsencrypt
 
     cat > .env <<EOF
     EMAIL=${CERT_CONTACT_EMAIL}
