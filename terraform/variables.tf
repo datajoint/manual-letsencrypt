@@ -30,3 +30,8 @@ variable "route53_record_name" {
 variable "manual_letsencrypt_repo" {
   type = string
 }
+
+variable "manual_letsencrypt_branch" {
+  type    = string
+  default = "master"
+}
