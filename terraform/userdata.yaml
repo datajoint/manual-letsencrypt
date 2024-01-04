@@ -51,7 +51,7 @@ write_files:
     git clone ${MANUAL_LETSENCRYPT_REPO} -b ${MANUAL_LETSENCRYPT_BRANCH}
 
     echo "INFO :: Generate SSL certs"
-    cd manual-letsencrypt/letsencrypt
+    cd /manual-letsencrypt/letsencrypt
 
     cat > .env <<EOF
     EMAIL=${CERT_CONTACT_EMAIL}
@@ -62,11 +62,12 @@ write_files:
     docker compose up -d
 
     time=0
-    while [ ! -d "./letsencrypt-key/archive/${ROUTE53_RECORD_NAME}.${ROUTE53_ZONE_NAME}" ]
+    while [ ! -d "/manual-letsencrypt/letsencrypt/letsencrypt-key/live/${ROUTE53_RECORD_NAME}.${ROUTE53_ZONE_NAME}" ]
     do
       sleep 10
       time=$((time+10))
       echo "INFO :: Waiting for SSL certs to be generated. Time elapsed: $${time} seconds"
+      ls -la /manual-letsencrypt/letsencrypt/letsencrypt-key/live/${ROUTE53_RECORD_NAME}.${ROUTE53_ZONE_NAME}
       if [ $${time} -gt 300 ]; then
         echo "ERROR :: Timeout waiting for SSL certs to be generated"
         exit 1
