@@ -1,0 +1,39 @@
+# create a Route53 record point fakeservices.datajoint.io to this instance
+# to run: docker-compose up -d --build
+# generated keys in ./letsencrypt-keys/archive/fakeservices.datajoint.io/
+# update fullchain and prikey in repo: datajoint/nginx-docker
+# Optional: to archive cert: tar -zcvf fakeservices.tar.gz letsencrypt-keys
+# remove the Route53 record
+version: '2.4'
+services:
+  letsencrypt:
+    image: linuxserver/swag:latest
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=Europe/London
+      - ONLY_SUBDOMAINS=true
+      - VALIDATION=http
+      - EMAIL
+      - URL
+      - SUBDOMAINS
+      - STAGING
+    healthcheck:
+      test: /healthcheck.sh
+      timeout: 5s
+      retries: 300
+      interval: 1s
+    ports:
+      - "80:80"
+    #   - "443:443"
+    # cap_add:
+    #   - NET_ADMIN
+    volumes:
+      # key=letsencrypt-keys/live/domain/privkey.pem
+      # cert=letsencrypt-keys/live/domain/cert.pem
+      - ./letsencrypt-keys:/config/etc/letsencrypt
+      - ./healthcheck.sh:/healthcheck.sh
+    networks:
+      - main
+networks:
+  main:

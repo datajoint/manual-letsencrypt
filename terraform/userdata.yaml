@@ -1,0 +1,85 @@
+#cloud-config
+
+# logs in  /var/log/cloud-init-output.log
+
+groups:
+  - ubuntu: [root,sys]
+  - docker
+
+users:
+  - default
+  - name: ubuntu
+    gecos: ubuntu
+    shell: /bin/bash
+    primary_group: ubuntu
+    sudo: ALL=(ALL) NOPASSWD:ALL
+    groups: adm, sudo, ubuntu, docker
+    lock_passwd: false
+    ssh_authorized_keys:
+      - ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQCWy940gt45/of4ZySTPYthkg3HWgbPuSAspxfzpmcFOCU5fYabe5jaf9cwgmbn3FrYfjawgoiu3nIazX+pT0nH2TS7xIeWm0v2zfVUei4X1xdgarYVuZ2v1eGMBupmCqcP0GDjZ5BwyQSklqgsB0eRNBIGB0Y98QFJlZRObgYhkw8PpQCGqA4DUwqBse0r8wuEiGOIrCKiszhfRcWdcyFx0F3Pd5mqoxRtHdQNsMt6DDV5yowOCQsepgmQHWAtiwinjSNxqgHHZYsEzVuqkje2gRKl3MA0bNgHaldDrjCD/2p9FHKBYLADws8xjCpkYoIxqevldiz4gUXlaF/o8xOD testdev
+
+## Update apt database and upgrade packages on first boot
+package_update: true
+package_upgrade: true
+
+## Install additional packages on first boot
+packages:
+  - git
+  - make
+  - build-essential
+  - net-tools
+  - binutils
+  - nfs-common
+  - vim
+  - nano
+  - tmux
+  - moreutils
+
+write_files:
+- path: /root/runcmd.sh
+  content: |
+    #!/bin/bash
+    sudo apt-get update
+
+    echo "INFO :: Get helper scripts"
+    sudo git clone https://gist.github.com/c6a2951519a190858c4c4ab993afc6a4.git /opt/linux_install_docker
+
+    echo "INFO :: Install Docker"
+    sudo bash /opt/linux_install_docker/install_docker.sh
+
+    echo "INFO :: Clone manual-letsencrypt repo"
+    git clone ${MANUAL_LETSENCRYPT_REPO} -b ${MANUAL_LETSENCRYPT_BRANCH}
+
+    echo "INFO :: Generate SSL certs"
+    cd /manual-letsencrypt/letsencrypt
+
+    cat > .env <<EOF
+    EMAIL=${CERT_CONTACT_EMAIL}
+    URL=${ROUTE53_ZONE_NAME}
+    SUBDOMAINS=${ROUTE53_RECORD_NAME}
+    STAGING=${CERT_STAGING}
+    EOF
+    docker compose up -d
+
+    time=0
+    while [ ! -d "/manual-letsencrypt/letsencrypt/letsencrypt-keys/live/${ROUTE53_RECORD_NAME}.${ROUTE53_ZONE_NAME}" ]
+    do
+      sleep 10
+      time=$((time+10))
+      echo "INFO :: Waiting for SSL certs to be generated. Time elapsed: $${time} seconds"
+      ls -la /manual-letsencrypt/letsencrypt/letsencrypt-keys/live/${ROUTE53_RECORD_NAME}.${ROUTE53_ZONE_NAME}
+      if [ $${time} -gt 300 ]; then
+        echo "ERROR :: Timeout waiting for SSL certs to be generated"
+        exit 1
+      fi
+    done
+    echo "INFO :: SSL certs generated"
+
+    ## manual-letsencrypt only manages cert generation
+
+  owner: root:root
+  permissions: "0700"
+
+runcmd:
+  - bash /root/runcmd.sh
+    
