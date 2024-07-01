@@ -19,6 +19,8 @@ provider "aws" {
 
 locals {
   tags = {
-    Scope = "U24"
+    Scope = "Internal_RD",
+    Contract = "DataJoint_Prod",
+    Application = "manual-letsencrypt"
   }
 }
