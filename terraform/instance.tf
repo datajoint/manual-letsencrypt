@@ -3,7 +3,7 @@ module "auto-letsencrypt-instance" {
   version = "~> 3.0"
 
   name                        = "auto-letsencrypt"
-  ami                         = "ami-0960ab670c8bb45f3" # 20.04 
+  ami                         = "ami-02f51509b3e149daf" # 24.04 LTS
   instance_type               = "t3a.micro"
   key_name                    = "dj-ops-key"
   monitoring                  = false
